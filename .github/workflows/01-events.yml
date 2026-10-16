@@ -1,0 +1,63 @@
+name: Events and contexts
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Student name
+        required: true
+        default: Dilawar Khalid
+        type: string
+      greeting:
+        description: Greeting
+        default: Hello
+        type: string
+      data:
+        description: SAP ID
+        default: '49085'
+        type: string
+  repository_dispatch:
+    types: [custom-webhook]
+permissions:
+  contents: read
+env:
+  COURSE: DevOps
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Context inspection
+        env:
+          ACTOR: ${{ github.actor }}
+          EVENT: ${{ github.event_name }}
+          OS: ${{ runner.os }}
+          APP: ${{ vars.APP_NAME }}
+          STUDENT: ${{ inputs.name }}
+          GREETING: ${{ inputs.greeting }}
+          DATA: ${{ inputs.data }}
+        run: |
+          printf 'actor=%s event=%s os=%s app=%s course=%s\n' "$ACTOR" "$EVENT" "$OS" "$APP" "$COURSE"
+          printf 'greeting=%s name=%s data=%s\n' "$GREETING" "$STUDENT" "$DATA"
+      - name: Contains expression
+        if: contains(github.ref, 'main')
+        run: echo 'The ref contains main'
+      - name: Success conditional
+        if: success()
+        run: echo 'Previous steps succeeded'
+      - name: Failure conditional
+        if: failure()
+        run: echo 'A previous step failed'
+      - name: Always conditional
+        if: always()
+        run: echo 'This step always evaluates after earlier steps'
+  dependent:
+    needs: inspect
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'This job starts after inspect succeeds'

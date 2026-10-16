@@ -1,0 +1,16 @@
+name: Released custom action
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: medilawer/devops-custom-action-49085@v1.0.0
+        id: greet
+        with:
+          name: Dilawar Khalid
+      - name: Output
+        env:
+          MESSAGE: ${{ steps.greet.outputs.message }}
+        run: printf '%s\n' "$MESSAGE"

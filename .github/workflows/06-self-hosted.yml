@@ -1,0 +1,13 @@
+name: Trusted manual self-hosted job
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  local:
+    runs-on: [self-hosted, linux, x64, dilawar-lab]
+    steps:
+      - name: Identify local runner
+        run: |
+          hostname
+          uname -a
+          echo 'Dilawar Khalid - SAP 49085 - self-hosted runner'

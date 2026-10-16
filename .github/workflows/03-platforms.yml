@@ -1,0 +1,26 @@
+name: Windows and macOS
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: PowerShell and Chocolatey
+        shell: pwsh
+        run: |
+          $PSVersionTable
+          Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version
+          choco --version
+          choco install jq --yes --no-progress
+          & 'C:\ProgramData\chocolatey\bin\jq.exe' --version
+  mac:
+    runs-on: macos-latest
+    steps:
+      - name: Compile Swift
+        run: |
+          sw_vers
+          swift --version
+          printf 'print("Hello from Dilawar Khalid, SAP 49085")\n' > hello.swift
+          swiftc hello.swift -o hello
+          ./hello

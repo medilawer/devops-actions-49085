@@ -1,0 +1,27 @@
+name: PostgreSQL service
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: classroom-only
+          POSTGRES_DB: activity
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Query service
+        env:
+          PGPASSWORD: classroom-only
+        run: |
+          psql --version
+          psql -h localhost -U postgres -d activity -v ON_ERROR_STOP=1 -c 'SELECT 49085 AS sap_id, current_database();'
